@@ -1,0 +1,42 @@
+name: demo error
+
+type: frequency
+num_events: 1
+timeframe:
+  minutes: 5
+
+#type: any
+#realert:
+#  seconds: 0
+
+index: demo-*
+filter:
+- query:
+    query_string:
+      query: "k8s_pod_namespace: product AND message.keyword: *ERROR*"
+
+alert:
+- "slack"
+
+alert_subject: "{} @{}"
+alert_subject_args:
+  - name
+  - "@timestamp"
+alert_text_type: alert_text_only
+
+slack_alert_fields:
+  - title: K8s_pod
+    value: k8s_pod
+    short: true
+  - title: Namespace
+    value: k8s_pod_namespace
+    short: true
+  - title: Message
+    value: message
+    short: false
+  - title: Path
+    value: log.file.path
+    short: false
+
+slack_msg_color: 'danger'
+slack_channel_override: "#demo"

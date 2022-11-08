@@ -1,0 +1,27 @@
+---
+# This is the internal user database
+# The hash value is a bcrypt hash and can be generated with plugin/tools/hash.sh
+
+_meta:
+  type: "internalusers"
+  config_version: 2
+
+# plugins/opensearch-security/tools/hash.sh
+admin:
+  hash: "$2y$12$F40KRs44B/WEs/ZFbYEjBOsbeCEC7.vz9SvzxRXtWdnpd8aaXGRc2"
+  reserved: true
+  backend_roles:
+  - "admin"
+  description: "Demo admin user"
+
+kibanaserver:
+  hash: "$2y$12$sv27Dtbsnwb.gTerPQrg1.bONEPXpzi27kES7NqS.q7E7MpoKnV/2"
+  reserved: true
+  description: "Demo kibanaserver user"
+
+filebeat:
+  hash: "$2y$12$4cXs9Ut4xkUWF6hOpNtI/.Q2/HDGDBj5QMeswrMXSmyvtOMoxYOFO"
+  reserved: false
+  backend_roles:
+  - "filebeat"
+  description: "Demo filebeat user"

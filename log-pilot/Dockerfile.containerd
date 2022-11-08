@@ -1,0 +1,29 @@
+FROM williamguozi/log-pilot-filebeat:containerd.ori as builder
+FROM docker.elastic.co/beats/filebeat-oss:7.10.2 as builder2
+
+FROM alpine:3.6
+RUN apk add --update python ca-certificates libc6-compat bash && \
+    mkdir -p /etc/filebeat /var/lib/filebeat /var/log/filebeat
+
+COPY --from=builder /pilot/pilot /pilot/pilot
+COPY --from=builder2 /usr/share/filebeat/filebeat /usr/bin/
+COPY --from=builder2 /usr/share/filebeat/fields.yml /etc/filebeat/
+COPY --from=builder2 /usr/share/filebeat/module /etc/filebeat/module
+COPY --from=builder2 /usr/share/filebeat/modules.d /etc/filebeat/modules.d
+
+COPY assets/entrypoint assets/filebeat/ assets/healthz /pilot/
+
+RUN chmod +x /pilot/pilot /pilot/entrypoint /pilot/healthz
+
+ENV PATH $PATH:/pilot/
+
+HEALTHCHECK CMD /pilot/healthz
+
+VOLUME /var/log/filebeat
+VOLUME /var/lib/filebeat
+
+WORKDIR /pilot/
+RUN mv -f filebeat.containerd.tpl filebeat.tpl
+
+ENV PILOT_TYPE=filebeat
+ENTRYPOINT ["/pilot/entrypoint"]
